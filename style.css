@@ -1,0 +1,670 @@
+/* ===== MILITARY WARFARE HUD TACTICAL THEME ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  font-family: 'Chakra Petch', 'Poppins', sans-serif;
+  color: #cbebff;
+  background-color: #040912;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Background Animated Radar Grid & Ambient Particles */
+.radar-bg {
+  position: fixed; inset: 0; z-index: -3;
+  background-image: 
+    radial-gradient(circle at 50% 50%, #0a2038 0%, #030810 100%),
+    linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+  animation: grid-pulse 8s infinite alternate ease-in-out;
+}
+@keyframes grid-pulse {
+  0% { background-size: 100% 100%, 40px 40px, 40px 40px; }
+  100% { background-size: 100% 100%, 44px 44px, 44px 44px; }
+}
+
+.radar-pulse-ring {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 600px; height: 600px; border: 1px solid rgba(0, 243, 255, 0.08);
+  border-radius: 50%; z-index: -2; pointer-events: none;
+  animation: pulse-ring 6s infinite linear;
+}
+.radar-pulse-ring.delay-1 { animation-delay: 3s; }
+@keyframes pulse-ring {
+  0% { width: 200px; height: 200px; opacity: 0.8; }
+  100% { width: 1200px; height: 1200px; opacity: 0; }
+}
+
+.scanline {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+  background-size: 100% 4px;
+}
+
+.bg-particles .p-dot {
+  position: fixed; width: 4px; height: 4px; background: #00f3ff; border-radius: 50%; opacity: 0.3;
+  box-shadow: 0 0 10px #00f3ff; z-index: -2; pointer-events: none;
+}
+.p1 { top: 20%; left: 15%; animation: float-p 7s infinite ease-in-out; }
+.p2 { top: 75%; left: 80%; animation: float-p 9s infinite ease-in-out 1s; }
+.p3 { top: 40%; left: 85%; animation: float-p 6s infinite ease-in-out 2s; }
+@keyframes float-p { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
+
+/* ===== KATEX & EQUATION EDITOR STYLING (MS WORD / GEOGEBRA STYLE) ===== */
+.k-tex {
+  display: inline-block;
+  vertical-align: middle;
+  color: #00f3ff;
+  padding: 0 2px;
+}
+.katex {
+  font-size: 1.15em !important;
+  color: inherit;
+}
+
+.eq-display-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 62px;
+  background: rgba(2, 10, 20, 0.98);
+  border: 1.5px solid #00f3ff88;
+  border-radius: 4px;
+  padding: 6px 8px 6px 14px;
+  box-shadow: inset 0 0 16px rgba(0, 243, 255, 0.14);
+}
+.eq-render-output {
+  flex: 1;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  color: #00ff66;
+  font-size: 1.38rem;
+}
+.eq-render-output .katex {
+  font-size: 1.45rem !important;
+  color: #00ff66;
+}
+.eq-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background: #ffaa00;
+  margin-left: 3px;
+  animation: blink-cursor 1s infinite;
+}
+@keyframes blink-cursor { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+.eq-raw-input {
+  width: 100%;
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: 0.95rem !important;
+  padding: 7px 12px !important;
+  background: rgba(3, 12, 23, 0.75) !important;
+  border: 1px dashed rgba(0, 243, 255, 0.35) !important;
+  color: #8ab8df !important;
+  text-align: left !important;
+}
+.eq-raw-input:focus {
+  border-color: #ffaa00 !important;
+  color: #00f3ff !important;
+  box-shadow: none !important;
+}
+
+/* Kontainer Utama HUD */
+.hud-container {
+  width: 96vw;
+  max-width: 1350px;
+  min-height: 96vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+}
+
+/* HUD Header Bar */
+.hud-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background: rgba(5, 16, 28, 0.9);
+  border: 1px solid #00f3ff55;
+  padding: 8px 18px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.18);
+  gap: 12px;
+}
+.hud-title { font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00f3ff; letter-spacing: 2px; font-size: 1.05rem; }
+.hud-status { display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; }
+.led-green { width: 10px; height: 10px; background: #00ff66; border-radius: 50%; box-shadow: 0 0 10px #00ff66; }
+.led-cyan { width: 10px; height: 10px; background: #00f3ff; border-radius: 50%; box-shadow: 0 0 10px #00f3ff; }
+
+/* PANEL AUDIO KONTROL VOLUME HUD */
+.hud-audio-panel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(3, 12, 23, 0.85);
+  border: 1px solid rgba(0, 243, 255, 0.35);
+  padding: 5px 12px;
+  border-radius: 4px;
+  height: 34px;
+}
+.btn-audio-toggle {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+.btn-audio-toggle:hover { transform: scale(1.15); }
+
+.slider-vol-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+.vol-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: #ffaa00;
+  font-weight: bold;
+  line-height: 1;
+}
+.vol-txt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: #00f3ff;
+  min-width: 34px;
+  text-align: right;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(0, 243, 255, 0.22);
+  height: 5px;
+  border-radius: 3px;
+  border: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00f3ff;
+  box-shadow: 0 0 8px #00f3ff;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: #ffaa00;
+  box-shadow: 0 0 10px #ffaa00;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: none;
+  background: #00f3ff;
+  box-shadow: 0 0 8px #00f3ff;
+  cursor: pointer;
+}
+.slider-vol-wrap input[type="range"] { width: 95px; }
+
+/* System Screen Layout */
+.screen { display: none; text-align: center; animation: hud-appear .35s ease-out; width: 100%; }
+.screen.active {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; width: 100%; margin: auto 0; padding: 12px 0;
+}
+@keyframes hud-appear { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+
+/* LANDSCAPE 2-KOLOM */
+.screen-landscape.active {
+  display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+}
+.mission-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 4px;
+}
+.threat-level {
+  font-family: 'Share Tech Mono', monospace; background: rgba(0, 243, 255, 0.15);
+  color: #00f3ff; border: 1px solid #00f3ff88; padding: 4px 12px; font-size: 0.85rem;
+}
+.mission-info {
+  text-align: left; color: #cbebff; font-size: 1rem; margin-bottom: 10px;
+  background: rgba(4, 15, 28, 0.8); padding: 10px 14px; border-left: 4px solid #ffaa00;
+  line-height: 1.7;
+}
+
+.landscape-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 20px;
+  width: 100%;
+  align-items: stretch;
+}
+.canvas-side { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.controls-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  width: 100%;
+  min-height: 520px;
+  background: rgba(4, 15, 28, 0.7);
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  padding: 16px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 15px rgba(0, 243, 255, 0.05);
+}
+
+/* Tipografi Militer */
+h1, h2 { font-family: 'Orbitron', sans-serif; text-shadow: 0 0 16px #00f3ff; letter-spacing: 2px; }
+h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); color: #00f3ff; }
+h2 { font-size: 1.4rem; color: #7ad7ff; border-left: 5px solid #00f3ff; padding-left: 12px; margin-bottom: 4px; }
+
+.military-badge {
+  font-family: 'Share Tech Mono', monospace; background: #ffaa0022; color: #ffaa00;
+  border: 1px solid #ffaa0088; padding: 6px 18px; font-size: 0.9rem; letter-spacing: 2px;
+}
+.subtitle { color: #8ab8df; font-size: 1.05rem; max-width: 720px; line-height: 1.6; }
+
+/* Commander Dialog & Stepper */
+.training-stepper {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+  min-height: 74px;
+  flex-shrink: 0;
+}
+.step-pill {
+  padding: 6px 10px; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+  background: rgba(3, 14, 26, 0.85); border: 1px solid #00f3ff33; color: #7ad7ff;
+  border-radius: 3px; cursor: pointer; transition: all 0.2s;
+}
+.step-pill.exam-pill {
+  border-color: rgba(255, 170, 0, 0.45);
+  color: #ffcc66;
+}
+.step-pill.passed {
+  border-color: #00ff6688;
+  color: #00ff66;
+}
+.step-pill.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.step-pill.active {
+  background: #00f3ff22; border-color: #00f3ff; color: #00f3ff; font-weight: bold;
+  box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
+}
+.step-pill.exam-pill.active {
+  background: rgba(255, 170, 0, 0.22); border-color: #ffaa00; color: #ffaa00;
+  box-shadow: 0 0 12px rgba(255, 170, 0, 0.3);
+}
+
+.commander-box {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: rgba(4, 18, 34, 0.95);
+  border: 1px solid #ffaa0088;
+  padding: 12px 16px;
+  border-radius: 4px;
+  width: 100%;
+  height: 128px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  box-shadow: 0 0 15px rgba(255, 170, 0, 0.15);
+}
+.commander-avatar {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  min-width: 90px; border-right: 1px solid #ffaa0044; padding-right: 10px;
+}
+.avatar-icon { font-size: 2rem; }
+.avatar-name { font-family: 'Orbitron', sans-serif; font-size: 0.68rem; color: #ffaa00; font-weight: 800; text-align: center; }
+.commander-dialog { font-size: 0.94rem; line-height: 1.75; color: #e1f3ff; font-family: 'Chakra Petch', sans-serif; }
+.commander-dialog b { color: #ffaa00; }
+
+/* Area Belajar (Slider) */
+.learn-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.sliders-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 92px;
+  flex-shrink: 0;
+  background: rgba(3, 12, 23, 0.9);
+  padding: 14px;
+  border: 1px solid #00f3ff33;
+}
+.sliders-container label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  color: #00f3ff;
+}
+.sliders-container label span:first-child { width: 85px; flex-shrink: 0; }
+.sliders-container label span:last-child { width: 65px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.sliders-container input[type="range"] { flex: 1; width: auto; }
+
+.status-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 128px;
+  flex-shrink: 0;
+}
+.rumus-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00f3ff;
+  font-size: 1.45rem;
+  height: 48px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.feedback-display {
+  font-family: 'Share Tech Mono', monospace;
+  color: #ffaa00;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.55;
+  background: rgba(5, 18, 32, 0.9);
+  padding: 10px 14px;
+  border-left: 4px solid #ffaa00;
+  width: 100%;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  overflow: hidden;
+}
+
+/* Area Ujian Modul */
+.exam-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+.exam-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+}
+.btn-sm {
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+/* Canvas HUD Wrapper */
+.canvas-hud-wrap {
+  position: relative; width: 100%; padding: 4px;
+  background: rgba(4, 12, 22, 0.95); border: 1px solid #00f3ff44;
+  box-shadow: 0 0 25px rgba(0, 243, 255, 0.15);
+}
+.hud-corner { position: absolute; width: 20px; height: 20px; border: 3px solid #00f3ff; pointer-events: none; }
+.hud-corner.top-left { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+.hud-corner.top-right { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+.hud-corner.bottom-left { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+.hud-corner.bottom-right { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+canvas { width: 100%; height: auto; display: block; border: 1px solid rgba(0, 243, 255, 0.25); background: #030a14; }
+
+/* Tombol Taktis */
+button {
+  font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 0.88rem;
+  letter-spacing: 1px; padding: 11px 18px; cursor: pointer; border: 0; transition: all 0.2s; outline: none;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+  filter: none !important;
+}
+.btn-lg { font-size: 1.05rem; padding: 16px 32px; }
+
+.btn-military {
+  background: linear-gradient(135deg, #00f3ff, #0088cc); color: #040912;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  box-shadow: 0 0 18px rgba(0, 243, 255, 0.4);
+}
+.btn-military:hover:not(:disabled) { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 0 25px rgba(0, 243, 255, 0.6); }
+
+.btn-tactical {
+  background: #092238; color: #00f3ff; border: 1px solid #00f3ff66;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.btn-tactical:hover:not(:disabled) { background: #00f3ff22; border-color: #00f3ff; }
+
+.btn-preview {
+  background: rgba(0, 255, 102, 0.14);
+  color: #00ff66;
+  border: 1px solid #00ff6688;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.btn-preview:hover:not(:disabled) {
+  background: rgba(0, 255, 102, 0.25);
+  box-shadow: 0 0 14px rgba(0, 255, 102, 0.35);
+}
+
+.btn-back { background: transparent; color: #7ad7ff; border: 1px solid #7ad7ff44; font-size: 0.85rem; }
+.btn-back:hover { background: #7ad7ff11; border-color: #7ad7ff; }
+
+.btn-danger {
+  background: linear-gradient(135deg, #ff0055, #990033); color: #fff;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.btn-launch {
+  background: linear-gradient(135deg, #ffaa00, #ff5500); color: #000;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  white-space: nowrap; font-size: 0.88rem;
+}
+.btn-launch:hover { filter: brightness(1.25); transform: translateY(-1px); }
+
+/* Grid Menu Utama & Form */
+.grid-tactical { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; width: 100%; max-width: 750px; }
+.btn-grid {
+  background: rgba(6, 20, 36, 0.9); color: #00f3ff; border: 1px solid #00f3ff44;
+  padding: 20px; font-size: 1rem; text-align: center;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.btn-grid:hover { background: #00f3ff22; border-color: #00f3ff; transform: translateY(-2px); }
+
+.form-tactical { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 480px; }
+.input-group { display: flex; flex-direction: column; text-align: left; gap: 8px; }
+.input-group label { font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; color: #00f3ff; }
+
+input:not([type="range"]) {
+  font-family: 'Share Tech Mono', monospace; font-size: 1.15rem; padding: 14px;
+  background: #030c17; border: 1px solid #00f3ff66; color: #00f3ff; border-radius: 3px; text-align: center;
+}
+input:not([type="range"]):focus { outline: none; border-color: #ffaa00; box-shadow: 0 0 15px #ffaa0066; }
+
+.terminal-box-group { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.input-label-taktis { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: #ffaa00; font-weight: bold; }
+
+/* Keypad Kalkulator Equation Gaya Word/GeoGebra */
+.ballistic-keypad {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; width: 100%;
+  background: rgba(5, 16, 28, 0.95); padding: 10px; border: 1px solid #00f3ff33; border-radius: 4px;
+}
+.ballistic-keypad button {
+  padding: 12px 0;
+  font-size: 1.38rem;
+  font-weight: 700;
+  line-height: 1.1;
+  background: #081a2c;
+  color: #00f3ff;
+  border: 1px solid #00f3ff33;
+  font-family: 'Share Tech Mono', monospace;
+  border-radius: 3px;
+}
+.compact-keypad button {
+  padding: 9px 0;
+  font-size: 1.22rem;
+}
+.ballistic-keypad button:hover { background: #00f3ff33; }
+.ballistic-keypad button.k-num { background: #0a233b; color: #e1f3ff; font-weight: 700; }
+.ballistic-keypad button.k-var { background: rgba(255, 170, 0, 0.18); color: #ffaa00; border-color: #ffaa0066; font-weight: 700; font-style: italic; }
+.ballistic-keypad button.k-struct {
+  background: rgba(0, 255, 102, 0.15);
+  color: #00ff66;
+  border-color: #00ff6666;
+  font-size: 1.12rem;
+}
+.ballistic-keypad button.k-action { color: #ff0055; border-color: #ff005544; font-size: 1.05rem; font-weight: 700; }
+.compact-keypad button.k-action { font-size: 0.98rem; }
+
+/* Daftar Legenda Mode Bebas */
+.bebas-legend {
+  display: flex; flex-direction: column; gap: 6px; width: 100%;
+}
+.legend-item {
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(3, 12, 23, 0.9); border: 1px solid rgba(0, 243, 255, 0.25);
+  padding: 6px 12px; border-radius: 3px; font-family: 'Share Tech Mono', monospace;
+}
+.legend-left { display: flex; align-items: center; gap: 10px; }
+.legend-swatch { width: 16px; height: 4px; border-radius: 2px; }
+.legend-text { color: #e1f3ff; font-size: 1.05rem; }
+.btn-del-line {
+  background: transparent; color: #ff0055; border: 1px solid #ff005555;
+  padding: 2px 8px; font-size: 0.8rem; border-radius: 2px;
+}
+.btn-del-line:hover { background: #ff005533; }
+
+.briefing-box, .report-box {
+  background: rgba(4, 14, 26, 0.9); border: 1px solid #00f3ff44; padding: 22px;
+  text-align: left; max-width: 750px; font-size: 1rem; line-height: 1.8; width: 100%;
+}
+.tactical-list { padding-left: 22px; }
+.tactical-list li { margin-bottom: 10px; }
+.msg-box { min-height: 26px; }
+.msg-tactical { font-family: 'Share Tech Mono', monospace; color: #ffaa00; font-weight: 700; font-size: 0.9rem; }
+.baris-action { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-start; margin-top: 4px; }
+.telemetry-bar { font-family: 'Share Tech Mono', monospace; color: #00ff66; margin-bottom: 8px; font-size: 1rem; }
+.hidden { display: none !important; }
+
+/* Styling Profil Pengembang */
+.profile-box {
+  display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 650px; padding: 20px;
+}
+.profile-group {
+  display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+  background: rgba(3, 14, 26, 0.85); border-left: 4px solid #00f3ff; border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+  font-family: 'Share Tech Mono', monospace;
+}
+.profile-label { color: #ffaa00; font-weight: bold; font-size: 0.95rem; letter-spacing: 1px; }
+.profile-value { color: #00f3ff; font-size: 1.05rem; text-align: right; font-weight: bold; }
+
+/* MODAL POPUP TAKTIS & SCAFFOLDING */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(2, 8, 16, 0.88); backdrop-filter: blur(6px);
+  display: flex; justify-content: center; align-items: center; padding: 24px;
+  animation: modal-fade-in 0.3s ease-out;
+}
+@keyframes modal-fade-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+.modal-hud-box {
+  width: 100%; max-width: 640px; background: rgba(4, 15, 28, 0.98);
+  border: 2px solid #00f3ff; border-radius: 6px; padding: 28px;
+  box-shadow: 0 0 40px rgba(0, 243, 255, 0.35); display: flex; flex-direction: column; gap: 18px; text-align: left;
+}
+.modal-hud-box.success { border-color: #00ff66; box-shadow: 0 0 40px rgba(0, 255, 102, 0.35); }
+.modal-hud-box.failed { border-color: #ff0055; box-shadow: 0 0 40px rgba(255, 0, 85, 0.35); }
+
+.modal-header { display: flex; align-items: center; gap: 14px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 14px; }
+.modal-icon { font-size: 2.4rem; }
+.modal-header h3 { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; letter-spacing: 1px; }
+.modal-hud-box.success h3 { color: #00ff66; text-shadow: 0 0 10px #00ff66; }
+.modal-hud-box.failed h3 { color: #ff0055; text-shadow: 0 0 10px #ff0055; }
+
+.modal-desc-text { font-size: 1.05rem; color: #cbebff; line-height: 1.75; }
+
+.modal-stars-container {
+  display: flex; align-items: center; gap: 14px; background: rgba(0, 255, 102, 0.1);
+  padding: 12px 18px; border: 1px solid #00ff6644; border-radius: 4px; margin-top: 6px;
+}
+.stars-label { font-family: 'Share Tech Mono', monospace; font-size: 0.95rem; color: #00ff66; }
+.stars-display { font-size: 1.8rem; letter-spacing: 4px; }
+
+.scaffolding-box {
+  background: rgba(255, 170, 0, 0.1); border: 1px dashed #ffaa00;
+  padding: 16px; border-radius: 4px; display: flex; flex-direction: column; gap: 12px; margin-top: 6px;
+}
+.scaffolding-header { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: #ffaa00; font-weight: 800; }
+.scaffolding-step { font-family: 'Chakra Petch', sans-serif; font-size: 0.96rem; color: #e1f3ff; line-height: 1.8; }
+.scaffolding-step b { color: #ffaa00; }
+
+.modal-footer { display: flex; gap: 14px; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 16px; }
+
+/* MEDIA RESPONSIVE */
+@media (max-width: 992px) {
+  .landscape-grid { grid-template-columns: 1fr; }
+  .controls-side { min-height: auto; }
+  .hud-container { width: 100vw; padding: 12px; }
+  .hud-header { flex-wrap: wrap; justify-content: center; text-align: center; }
+}
+
+@media (max-width: 600px) {
+  .eq-display-box { flex-direction: column; align-items: stretch; }
+  .btn-launch { width: 100%; }
+  .training-stepper, .commander-box, .sliders-container, .status-panel, .feedback-display {
+    height: auto;
+    min-height: unset;
+  }
+  .commander-box { flex-direction: column; align-items: flex-start; }
+  .commander-avatar { border-right: none; border-bottom: 1px solid #ffaa0044; padding-bottom: 8px; width: 100%; }
+  .modal-footer { flex-direction: column; }
+  .modal-footer button { width: 100%; }
+  .profile-group { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .profile-value { text-align: left; }
+}
