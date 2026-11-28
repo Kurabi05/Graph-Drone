@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COMMAND CENTER: MISI DRONE TAKTIS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Orbitron:wght@600;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <!-- PUSTAKA KATEX UNTUK RENDER EQUATION GAYA GEOGEBRA & MS WORD -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ANIMASI LATAR BELAKANG HUD TAKTIS -->
+<div class="radar-bg"></div>
+<div class="radar-pulse-ring"></div>
+<div class="radar-pulse-ring delay-1"></div>
+<div class="scanline"></div>
+<div class="bg-particles">
+  <div class="p-dot p1"></div><div class="p-dot p2"></div><div class="p-dot p3"></div>
+</div>
+
+<!-- FILE AUDIO BACKSOUND -->
+<audio id="bgm-audio-1" loop src="Mulai - Pendahuluan.mp3"></audio>
+<audio id="bgm-audio-2" loop src="Main Menu.mp3"></audio>
+<audio id="bgm-audio-3" loop src="Kamp Pelatihan.mp3"></audio>
+<audio id="bgm-audio-4" loop src="Misi.mp3"></audio>
+<audio id="bgm-audio-5" loop src="Mode Bebas.mp3"></audio>
+<audio id="bgm-audio-6" loop src="Data Pengguna.mp3"></audio>
+
+<main class="hud-container">
+
+  <!-- HEADER TELEMETRI TAKTIS & KONTROL VOLUME -->
+  <header class="hud-header">
+    <div class="hud-status">
+      <span class="led-green"></span>
+      <span class="hud-label">SISTEM: BERJALAN</span>
+    </div>
+
+    <div class="hud-title">KONTROL DAN PERINTAH // GRAPH-DRONE</div>
+
+    <div class="hud-audio-panel">
+      <button id="btn-mute" class="btn-audio-toggle" title="Mute/Unmute Audio">🔊</button>
+      <div class="slider-vol-wrap">
+        <span class="vol-label">VOL</span>
+        <input type="range" id="bgm-volume" min="0" max="1" step="0.05" value="0.3" title="Pengaturan Volume Backsound">
+        <span id="vol-txt" class="vol-txt">30%</span>
+      </div>
+    </div>
+
+    <div class="hud-status">
+      <span class="hud-label" id="hud-callsign">PILOT: TIDAK DIKETAHUI</span>
+      <span class="led-cyan"></span>
+    </div>
+  </header>
+
+  <!-- HALAMAN MULAI -->
+  <section id="mulai" class="screen active">
+    <div class="military-badge">MEDIA PEMBELAJARAN // KELAS 8</div>
+    <h1>GRAPH-DRONE</h1>
+    <p class="subtitle">Simulasi Pilot Drone dengan Persamaan Garis Lurus<br>Matematika Fase D · Kelas 8 SMP</p>
+    <button data-go="identitas" class="btn-military btn-lg">MULAI SIMULASI ➔</button>
+  </section>
+
+  <!-- HALAMAN IDENTITAS PILOT -->
+  <section id="identitas" class="screen">
+    <h2>👨‍✈️ DATA IDENTITAS SISWA</h2>
+    <div class="form-tactical">
+      <div class="input-group">
+        <label>NAMA LENGKAP:</label>
+        <input id="nama" placeholder="Masukkan Nama..." maxlength="30" autocomplete="off">
+      </div>
+      <div class="input-group">
+        <label>KELAS:</label>
+        <input id="kelas" placeholder="Contoh: 8A" maxlength="10" autocomplete="off">
+      </div>
+      <button id="btnId" class="btn-military btn-lg">MASUK PUSAT KENDALI ➔</button>
+    </div>
+  </section>
+
+  <!-- HALAMAN PENDAHULUAN & BRIEFING -->
+  <section id="pendahuluan" class="screen">
+    <h2>📡 PENDAHULUAN</h2>
+    <div class="briefing-box">
+      <p><b>Persamaan Garis Lurus</b> digunakan untuk menentukan jalur terbang lurus sebuah drone pada bidang koordinat Kartesius. Nilai gradien <span class="k-tex" data-tex="m"></span> mengatur kemiringan arah terbang, sedangkan konstanta <span class="k-tex" data-tex="c"></span> menentukan titik potong pada Sumbu-Y.</p>
+      <p><b>TUGAS KAMU:</b> Susun persamaan garis <span class="k-tex" data-tex="y = mx + c"></span> agar drone meluncur dari titik pangkalan tepat menuju titik target 🎯 sambil menghindari zona radar musuh 📡.</p>
+    </div>
+    <button data-go="menu" class="btn-military btn-lg">KE MENU UTAMA ➔</button>
+  </section>
+
+  <!-- MENU UTAMA -->
+  <section id="menu" class="screen">
+    <h2>🎛️ MENU UTAMA</h2>
+    <p id="salam" class="telemetry-bar"></p>
+    <div class="grid-tactical">
+      <button data-go="materi" class="btn-grid">📘 KAMP PELATIHAN</button>
+      <button data-go="petunjuk" class="btn-grid">🎯 JALANKAN MISI</button>
+      <button data-go="bebas" class="btn-grid">🛰️ EKSPLORASI BEBAS</button>
+      <button data-go="pengembang" class="btn-grid">👩‍💻 DATA PENGEMBANG</button>
+      <button id="btnResetProgres" class="btn-grid btn-danger">🔄 RESET PROGRES</button>
+      <button data-go="keluar" class="btn-grid btn-danger">⏻ KELUAR</button>
+    </div>
+  </section>
+
+  <!-- PILIH MATERI / MODUL PELATIHAN -->
+  <section id="materi" class="screen">
+    <h2>🪖 KAMP PELATIHAN</h2>
+    <p class="subtitle">Pelajari pengaruh gradien dan konstanta melalui simulasi interaktif, lalu selesaikan <b>Ujian Modul</b> untuk membuka materi berikutnya.</p>
+    <div class="grid-tactical">
+      <button id="m-linear" class="btn-grid">FASE 1: GRADIEN & PERSAMAAN GARIS LURUS</button>
+      <button id="m-kedudukan" class="btn-grid">FASE 2: KEDUDUKAN DUA GARIS (SEJAJAR & TEGAK LURUS)</button>
+    </div>
+    <button class="btn-back" data-go="menu">⬅ KEMBALI KE MENU UTAMA</button>
+  </section>
+
+  <!-- TAMPILAN MATERI INTERAKTIF & UJIAN MODUL -->
+  <section id="materi-view" class="screen screen-landscape">
+    <div class="landscape-grid">
+      <div class="canvas-side">
+        <div class="canvas-hud-wrap">
+          <div class="hud-corner top-left"></div><div class="hud-corner top-right"></div>
+          <div class="hud-corner bottom-left"></div><div class="hud-corner bottom-right"></div>
+          <canvas id="cv-materi" width="960" height="640"></canvas>
+        </div>
+      </div>
+
+      <div class="controls-side">
+        <div class="training-stepper" id="training-steps"></div>
+        
+        <div class="commander-box">
+          <div class="commander-avatar">
+            <span class="avatar-icon">🎖️</span>
+            <span class="avatar-name">KOMANDAN A</span>
+          </div>
+          <div class="commander-dialog" id="cm-dialog"></div>
+        </div>
+
+        <!-- PANEL BELAJAR (SLIDER) -->
+        <div id="learn-area" class="learn-area">
+          <div id="sliders" class="sliders-container"></div>
+          <div class="status-panel">
+            <div id="mv-rumus" class="rumus-display"></div>
+            <div id="mv-feedback" class="feedback-display"></div>
+          </div>
+        </div>
+
+        <!-- PANEL UJIAN MODUL (EQUATION EDITOR GAYA WORD/GEOGEBRA) -->
+        <div id="exam-area" class="exam-area hidden">
+          <div class="terminal-box-group">
+            <label class="input-label-taktis">EQUATION EDITOR — SUSUN PERSAMAAN GARIS:</label>
+            <div class="eq-display-box" id="fm-exam-box">
+              <div id="fm-exam-render" class="eq-render-output"></div>
+              <button id="btnTembakExam" class="btn-launch">🔥 TEMBAK</button>
+            </div>
+            <input id="fm-exam" class="eq-raw-input" placeholder="Atau ketik langsung: (1/2)x + 3" autocomplete="off">
+          </div>
+
+          <div class="ballistic-keypad compact-keypad" id="kp-materi">
+            <button data-key="7" class="k-num">7</button>
+            <button data-key="8" class="k-num">8</button>
+            <button data-key="9" class="k-num">9</button>
+            <button data-key="FRAC" class="k-struct" title="Pecahan a/b">a/b</button>
+            <button data-key="DEL" class="k-action">⌫ DEL</button>
+
+            <button data-key="4" class="k-num">4</button>
+            <button data-key="5" class="k-num">5</button>
+            <button data-key="6" class="k-num">6</button>
+            <button data-key="SQ" class="k-struct" title="Pangkat Kuadrat">x²</button>
+            <button data-key="CLR" class="k-action">CLR</button>
+
+            <button data-key="1" class="k-num">1</button>
+            <button data-key="2" class="k-num">2</button>
+            <button data-key="3" class="k-num">3</button>
+            <button data-key="-">-</button>
+            <button data-key="(">(</button>
+
+            <button data-key="0" class="k-num">0</button>
+            <button data-key=".">.</button>
+            <button data-key="x" class="k-var">x</button>
+            <button data-key="+">+</button>
+            <button data-key=")">)</button>
+          </div>
+
+          <div class="exam-status-row">
+            <p id="exam-msg" class="msg-tactical"></p>
+            <button id="btnHintExam" class="btn-tactical btn-sm">💡 PETUNJUK RUMUS</button>
+          </div>
+        </div>
+
+        <div class="baris-action">
+          <button id="btnPrevStep" class="btn-tactical">⬅ SEBELUMNYA</button>
+          <button id="btnNextStep" class="btn-military">LANJUT TAHAP ➔</button>
+          <button id="btnBackModul" class="btn-back" data-go="materi">⬅ PILIH MODUL</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PETUNJUK MISI -->
+  <section id="petunjuk" class="screen">
+    <h2>🎯 PETUNJUK PENGERJAAN MISI</h2>
+    <div class="briefing-box">
+      <ol class="tactical-list">
+        <li><b>BACA KOORDINAT RADAR:</b> Koordinat titik pangkalan drone, titik target, dan pusat radar sudah tertera langsung pada layar grafik.</li>
+        <li><b>EQUATION EDITOR:</b> Gunakan tombol <b>a/b</b> untuk membuat pecahan bertumpuk atau <b>x²</b> untuk pangkat, seperti pada fitur Equation di Microsoft Word dan GeoGebra.</li>
+        <li><b>GUNAKAN UJI LINTASAN:</b> Kamu memiliki jatah <b>2 kali Uji Lintasan</b> di setiap misi untuk melihat bayangan garis sebelum meluncurkan drone.</li>
+        <li><b>BINTANG SKOR:</b> Selesaikan misi dalam 1 kali peluncuran drone untuk meraih 3 Bintang ⭐⭐⭐.</li>
+      </ol>
+    </div>
+    <button id="btnMulaiTantangan" class="btn-military btn-lg">MULAI MISI 1 ➔</button>
+    <button class="btn-back" data-go="menu">⬅ KEMBALI KE MENU UTAMA</button>
+  </section>
+
+  <!-- LAYAR MISI TANTANGAN LEVEL 1-6 -->
+  <section id="game" class="screen screen-landscape">
+    <div class="mission-bar">
+      <h2 id="g-judul"></h2>
+      <span class="threat-level" id="g-level-badge">MISI 1 / 6</span>
+    </div>
+    <div id="g-info" class="mission-info"></div>
+
+    <div class="landscape-grid">
+      <div class="canvas-side">
+        <div class="canvas-hud-wrap">
+          <div class="hud-corner top-left"></div><div class="hud-corner top-right"></div>
+          <div class="hud-corner bottom-left"></div><div class="hud-corner bottom-right"></div>
+          <canvas id="cv-game" width="960" height="640"></canvas>
+        </div>
+      </div>
+
+      <div class="controls-side">
+        <div class="terminal-box-group">
+          <label class="input-label-taktis">EQUATION EDITOR — PERSAMAAN GARIS LURUS:</label>
+          <div class="eq-display-box" id="fx-box">
+            <div id="fx-render" class="eq-render-output"></div>
+            <button id="btnTembak" class="btn-launch">🔥 LUNCURKAN</button>
+          </div>
+          <input id="fx" class="eq-raw-input" placeholder="Ketik atau gunakan tombol: contoh (1/2)x + 3" autocomplete="off">
+        </div>
+
+        <div class="ballistic-keypad" id="kp-game">
+          <button data-key="7" class="k-num">7</button>
+          <button data-key="8" class="k-num">8</button>
+          <button data-key="9" class="k-num">9</button>
+          <button data-key="FRAC" class="k-struct" title="Pecahan a/b">a/b</button>
+          <button data-key="DEL" class="k-action">⌫ DEL</button>
+
+          <button data-key="4" class="k-num">4</button>
+          <button data-key="5" class="k-num">5</button>
+          <button data-key="6" class="k-num">6</button>
+          <button data-key="SQ" class="k-struct" title="Pangkat Kuadrat">x²</button>
+          <button data-key="CLR" class="k-action">CLR</button>
+
+          <button data-key="1" class="k-num">1</button>
+          <button data-key="2" class="k-num">2</button>
+          <button data-key="3" class="k-num">3</button>
+          <button data-key="-">-</button>
+          <button data-key="(">(</button>
+
+          <button data-key="0" class="k-num">0</button>
+          <button data-key=".">.</button>
+          <button data-key="x" class="k-var">x</button>
+          <button data-key="+">+</button>
+          <button data-key=")">)</button>
+        </div>
+
+        <div id="g-msg-box" class="msg-box">
+          <p id="g-msg" class="msg-tactical"></p>
+        </div>
+
+        <div class="baris-action">
+          <button class="btn-preview" id="btnPreview">👁️ UJI LINTASAN (2x)</button>
+          <button class="btn-tactical" id="btnHint">💡 BANTUAN RUMUS</button>
+          <button class="btn-back" data-go="menu">⬅ MENU UTAMA</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HASIL OPERASI -->
+  <section id="hasil" class="screen">
+    <h2>🏆 LAPORAN HASIL OPERASI MISI</h2>
+    <div id="h-isi" class="report-box"></div>
+    <button id="btnUlang" class="btn-military btn-lg">ULANGI SELURUH MISI</button>
+    <button data-go="menu" class="btn-back">MENU UTAMA</button>
+  </section>
+
+  <!-- MODE BEBAS -->
+  <section id="bebas" class="screen screen-landscape">
+    <h2>🛰️ EKSPLORASI GRAFIK BEBAS</h2>
+    <p class="subtitle">Gambar hingga 5 persamaan garis lurus maupun kurva kuadrat (<span class="k-tex" data-tex="y = ax^2 + bx + c"></span>) secara bersamaan seperti pada GeoGebra.</p>
+    
+    <div class="landscape-grid">
+      <div class="canvas-side">
+        <div class="canvas-hud-wrap">
+          <div class="hud-corner top-left"></div><div class="hud-corner top-right"></div>
+          <div class="hud-corner bottom-left"></div><div class="hud-corner bottom-right"></div>
+          <canvas id="cv-bebas" width="960" height="640"></canvas>
+        </div>
+      </div>
+
+      <div class="controls-side">
+        <div class="terminal-box-group">
+          <label class="input-label-taktis">EQUATION EDITOR — INPUT GRAFIK:</label>
+          <div class="eq-display-box" id="fb-box">
+            <div id="fb-render" class="eq-render-output"></div>
+            <button id="btnGambar" class="btn-launch">GAMBAR GRAFIK</button>
+          </div>
+          <input id="fb" class="eq-raw-input" placeholder="Ketik atau tekan tombol: contoh (1/2)x^2 - 3" autocomplete="off">
+        </div>
+
+        <div class="ballistic-keypad" id="kp-bebas">
+          <button data-key="7" class="k-num">7</button>
+          <button data-key="8" class="k-num">8</button>
+          <button data-key="9" class="k-num">9</button>
+          <button data-key="FRAC" class="k-struct" title="Pecahan a/b">a/b</button>
+          <button data-key="DEL" class="k-action">⌫ DEL</button>
+
+          <button data-key="4" class="k-num">4</button>
+          <button data-key="5" class="k-num">5</button>
+          <button data-key="6" class="k-num">6</button>
+          <button data-key="SQ" class="k-struct" title="Pangkat Kuadrat">x²</button>
+          <button data-key="CLR" class="k-action">CLR</button>
+
+          <button data-key="1" class="k-num">1</button>
+          <button data-key="2" class="k-num">2</button>
+          <button data-key="3" class="k-num">3</button>
+          <button data-key="-">-</button>
+          <button data-key="(">(</button>
+
+          <button data-key="0" class="k-num">0</button>
+          <button data-key=".">.</button>
+          <button data-key="x" class="k-var">x</button>
+          <button data-key="+">+</button>
+          <button data-key=")">)</button>
+        </div>
+
+        <!-- DAFTAR LEGENDA GARIS AKTIF -->
+        <div id="bebas-legend" class="bebas-legend"></div>
+
+        <button class="btn-danger" id="btnHapus" style="width:100%; margin-top:4px;">BERSIHKAN SEMUA GRAFIK</button>
+        <p id="b-msg" class="msg-tactical"></p>
+        <button class="btn-back" data-go="menu">⬅ KEMBALI KE MENU UTAMA</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATA PENGEMBANG -->
+  <section id="pengembang" class="screen">
+    <h2>👩‍💻 PROFIL PENGEMBANG MEDIA</h2>
+    <div class="briefing-box profile-box">
+      <div class="profile-group">
+        <span class="profile-label">NAMA:</span>
+        <span class="profile-value">ABI DESTI IHSAN</span>
+      </div>
+      <div class="profile-group">
+        <span class="profile-label">NIM:</span>
+        <span class="profile-value">F1041251005</span>
+      </div>
+      <div class="profile-group">
+        <span class="profile-label">MATA KULIAH:</span>
+        <span class="profile-value">MEDIA PEMBELAJARAN MATEMATIKA BERBASIS TIK</span>
+      </div>
+      <div class="profile-group">
+        <span class="profile-label">PROGRAM STUDI:</span>
+        <span class="profile-value">PENDIDIKAN MATEMATIKA</span>
+      </div>
+      <div class="profile-group">
+        <span class="profile-label">FAKULTAS:</span>
+        <span class="profile-value">KEGURUAN DAN ILMU PENDIDIKAN</span>
+      </div>
+    </div>
+    <button data-go="menu" class="btn-back">⬅ KEMBALI KE MENU UTAMA</button>
+  </section>
+
+  <!-- KELUAR -->
+  <section id="keluar" class="screen">
+    <h2>👋 SAMPAI JUMPA LAGI</h2>
+    <p>Sesi simulasi selesai. Terima kasih telah berlatih persamaan garis lurus!</p>
+    <button data-go="mulai" class="btn-military btn-lg">KELUAR</button>
+  </section>
+
+</main>
+
+<!-- MODAL POPUP TAKTIS & SCAFFOLDING -->
+<div id="modal-result" class="modal-overlay hidden">
+  <div class="modal-hud-box" id="modal-box">
+    <div class="modal-header" id="modal-header">
+      <span id="modal-icon" class="modal-icon">🎯</span>
+      <h3 id="modal-title">MISI BERHASIL</h3>
+    </div>
+    
+    <div class="modal-body">
+      <div id="modal-desc" class="modal-desc-text"></div>
+
+      <div id="modal-stars-wrap" class="modal-stars-container hidden">
+        <span class="stars-label">PEROLEHAN BINTANG:</span>
+        <div id="modal-stars" class="stars-display"></div>
+      </div>
+
+      <div id="modal-scaffolding" class="scaffolding-box hidden">
+        <div class="scaffolding-header">💡 PANDUAN LANGKAH PENYELESAIAN</div>
+        <div class="scaffolding-step" id="scaff-step1"></div>
+        <div class="scaffolding-step" id="scaff-step2"></div>
+        <div class="scaffolding-step" id="scaff-step3"></div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button id="modal-btn-primary" class="btn-military">LANJUTKAN ➔</button>
+      <button id="modal-btn-secondary" class="btn-tactical">COBA LAGI</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
